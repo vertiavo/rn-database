@@ -1,31 +1,73 @@
 import React, { Component } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Button,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import firebase from "react-native-firebase";
 
 export default class DetailsScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = { isLoading: true };
+    this.state = {
+      isLoading: true,
+      movie: {}
+    };
+
     const { navigation } = this.props;
-    this.movieId = navigation.getParam("id", "");
+    movieId = navigation.getParam("id", "");
+
+    this.ref = firebase
+      .firestore()
+      .collection("movies")
+      .doc(movieId);
   }
 
   async componentDidMount() {
-    try {
-      let response = await fetch(
-        `https://api.themoviedb.org/3/movie/${this.movieId}?api_key=`
-      );
-      let responseJson = await response.json();
-      this.setState(
-        {
-          isLoading: false,
-          dataSource: responseJson
-        },
-        function() {}
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    let doc = await this.ref.get();
+    const {
+      title,
+      overview,
+      release_date,
+      vote_average,
+      budget,
+      revenue,
+      adult,
+      homepage
+    } = await doc.data();
+
+    let movie = {
+      key: doc.id,
+      doc,
+      title,
+      overview,
+      release_date,
+      vote_average,
+      budget,
+      revenue,
+      adult,
+      homepage
+    };
+
+    this.setState({
+      movie,
+      isLoading: false
+    });
+  }
+
+  onDelete() {
+    firebase
+      .firestore()
+      .collection("movies")
+      .doc(movieId)
+      .delete()
+      .then(function() {})
+      .catch(function(error) {
+        console.log("Error during deleting item: ", error);
+      });
   }
 
   render() {
@@ -37,7 +79,7 @@ export default class DetailsScreen extends Component {
       );
     }
 
-    let movie = this.state.dataSource;
+    let movie = this.state.movie;
 
     return (
       <View style={styles.container}>
@@ -109,6 +151,7 @@ export default class DetailsScreen extends Component {
             </View>
           </View>
         </ScrollView>
+        <Button onPress={this.onDelete} title="Delete" />
       </View>
     );
   }

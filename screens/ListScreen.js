@@ -7,33 +7,50 @@ import {
   View
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import firebase from "react-native-firebase";
 
 export default class ListScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = { isLoading: true };
+    this.state = {
+      isLoading: true,
+      movies: []
+    };
+    this.ref = firebase.firestore().collection("movies");
+    this.unsubscribe = null;
   }
 
-  async componentDidMount() {
-    try {
-      let response = await fetch(
-        `https://api.themoviedb.org/3/discover/movie?%20%E2%86%B5%20sort_by=popularity.desc?&api_key=`
-      );
-      let responseJson = await response.json();
-      this.setState(
-        {
-          isLoading: false,
-          dataSource: responseJson.results
-        },
-        function() {}
-      );
-    } catch (error) {
-      console.error(error);
-    }
+  componentDidMount() {
+    this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
   }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  onCollectionUpdate = querySnapshot => {
+    const movies = [];
+
+    querySnapshot.forEach(doc => {
+      const { title, overview, release_date } = doc.data();
+
+      movies.push({
+        key: doc.id,
+        doc,
+        title,
+        overview,
+        release_date
+      });
+    });
+
+    this.setState({
+      movies,
+      isLoading: false
+    });
+  };
 
   onPress(item) {
-    this.props.navigation.navigate("Details", { id: item.id });
+    this.props.navigation.navigate("Details", { id: item.key });
   }
 
   renderSeparator = () => {
@@ -52,7 +69,7 @@ export default class ListScreen extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          data={this.state.dataSource}
+          data={this.state.movies}
           ItemSeparatorComponent={this.renderSeparator}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={this.onPress.bind(this, item)}>
@@ -69,7 +86,7 @@ export default class ListScreen extends Component {
               </View>
             </TouchableOpacity>
           )}
-          keyExtractor={({ id }, index) => id.toString()}
+          keyExtractor={(item, index) => item.key}
         />
       </View>
     );

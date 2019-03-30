@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "817705463014",
+    "firebase_url": "https://reactnativedbexample.firebaseio.com",
+    "project_id": "reactnativedbexample",
+    "storage_bucket": "reactnativedbexample.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:817705463014:android:03dd31eaded9f947",
+        "android_client_info": {
+          "package_name": "com.vertiavo.dbexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "817705463014-ngctu80glm6tf2kh7p6hfmlkv4voftm7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9HWBbgr878MFlryfn6M4M6D1OavKHz9c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

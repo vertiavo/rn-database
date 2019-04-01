@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {
   ActivityIndicator,
+  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -19,6 +20,10 @@ export default class ListScreen extends Component {
     this.ref = firebase.firestore().collection("movies");
     this.unsubscribe = null;
   }
+
+  static navigationOptions = {
+    title: "Movies"
+  };
 
   componentDidMount() {
     this.unsubscribe = this.ref.onSnapshot(this.onCollectionUpdate);
@@ -87,6 +92,10 @@ export default class ListScreen extends Component {
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => item.key}
+        />
+        <Button
+          title="New movie"
+          onPress={() => this.props.navigation.navigate("Input")}
         />
       </View>
     );

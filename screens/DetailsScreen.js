@@ -4,6 +4,7 @@ import {
   Button,
   StyleSheet,
   Text,
+  ToastAndroid,
   View
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -25,6 +26,10 @@ export default class DetailsScreen extends Component {
       .collection("movies")
       .doc(movieId);
   }
+
+  static navigationOptions = {
+    title: "Details"
+  };
 
   async componentDidMount() {
     let doc = await this.ref.get();
@@ -58,16 +63,21 @@ export default class DetailsScreen extends Component {
     });
   }
 
-  onDelete() {
-    firebase
-      .firestore()
-      .collection("movies")
-      .doc(movieId)
-      .delete()
-      .then(function() {})
-      .catch(function(error) {
-        console.log("Error during deleting item: ", error);
-      });
+  async onDelete() {
+    try {
+      await firebase
+        .firestore()
+        .collection("movies")
+        .doc(movieId)
+        .delete();
+      ToastAndroid.showWithGravity(
+        "Movie deleted, press Back to return to the list.",
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER
+      );
+    } catch (error) {
+      console.error("Error during deleting item: ", error);
+    }
   }
 
   render() {
@@ -151,7 +161,17 @@ export default class DetailsScreen extends Component {
             </View>
           </View>
         </ScrollView>
-        <Button onPress={this.onDelete} title="Delete" />
+        <View style={styles.button}>
+          <Button
+            title="Edit"
+            onPress={() =>
+              this.props.navigation.navigate("Input", { id: movieId })
+            }
+          />
+        </View>
+        <View style={styles.button}>
+          <Button onPress={this.onDelete} title="Delete" />
+        </View>
       </View>
     );
   }
@@ -180,5 +200,8 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontWeight: "bold"
+  },
+  button: {
+    padding: 10
   }
 });

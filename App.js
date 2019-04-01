@@ -1,6 +1,7 @@
 import { createAppContainer, createStackNavigator } from "react-navigation";
 import ListScreen from "./screens/ListScreen";
 import DetailsScreen from "./screens/DetailsScreen";
+import InputScreen from "./screens/InputScreen";
 
 const AppNavigator = createStackNavigator(
   {
@@ -9,6 +10,9 @@ const AppNavigator = createStackNavigator(
     },
     Details: {
       screen: DetailsScreen
+    },
+    Input: {
+      screen: InputScreen
     }
   },
   {

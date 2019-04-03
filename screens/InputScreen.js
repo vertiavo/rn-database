@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   ActivityIndicator,
   Button,
-  CheckBox,
   StyleSheet,
   Text,
   TextInput,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import firebase from "react-native-firebase";
+import { CheckBox } from "react-native-elements";
 
 export default class InputScreen extends Component {
   constructor(props) {
@@ -113,11 +113,6 @@ export default class InputScreen extends Component {
     }
   }
 
-  onAdultPressed() {
-    let newAdultValue = !this.state.movie.adult;
-    this.setState({ movie: { ...this.state.movie, adult: newAdultValue } });
-  }
-
   render() {
     if (this.state.isLoading) {
       return (
@@ -184,7 +179,7 @@ export default class InputScreen extends Component {
             <View style={styles.propertyValue}>
               <TextInput
                 placeholder="Vote average"
-                value={this.state.movie.vote_average}
+                value={String(this.state.movie.vote_average)}
                 onChangeText={vote_average =>
                   this.setState({
                     movie: { ...this.state.movie, vote_average }
@@ -201,7 +196,7 @@ export default class InputScreen extends Component {
             <View style={styles.propertyValue}>
               <TextInput
                 placeholder="Budget"
-                value={this.state.movie.budget}
+                value={String(this.state.movie.budget)}
                 onChangeText={budget =>
                   this.setState({ movie: { ...this.state.movie, budget } })
                 }
@@ -216,7 +211,7 @@ export default class InputScreen extends Component {
             <View style={styles.propertyValue}>
               <TextInput
                 placeholder="Revenue"
-                value={this.state.movie.revenue}
+                value={String(this.state.movie.revenue)}
                 onChangeText={revenue =>
                   this.setState({ movie: { ...this.state.movie, revenue } })
                 }
@@ -225,12 +220,19 @@ export default class InputScreen extends Component {
           </View>
 
           <View style={styles.propertyRow}>
-            <CheckBox
-              center
-              title="Adult"
-              checked={this.state.movie.adult}
-              onPress={this.onAdultPressed}
-            />
+            <View style={styles.propertyLabel}>
+              <Text style={styles.labelText}>Adult</Text>
+            </View>
+            <View style={styles.propertyValue}>
+              <CheckBox
+                checked={this.state.movie.adult}
+                onPress={() =>
+                  this.setState({
+                    movie: { ...this.state.movie, adult: !this.state.adult }
+                  })
+                }
+              />
+            </View>
           </View>
 
           <View style={styles.propertyRow}>

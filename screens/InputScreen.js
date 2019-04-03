@@ -17,7 +17,16 @@ export default class InputScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      movie: {}
+      movie: {
+        title: "",
+        overview: "",
+        release_date: "",
+        vote_average: 5.0,
+        budget: 1,
+        revenue: 1,
+        adult: false,
+        homepage: ""
+      }
     };
 
     const { navigation } = this.props;
@@ -69,18 +78,19 @@ export default class InputScreen extends Component {
     }
   }
 
-  async onSave() {
+  async onSave(movie, navigation) {
     if (movieId === "NO-ID") {
       try {
         await firebase
           .firestore()
           .collection("movies")
-          .add(this.state.movie);
+          .add(movie);
         ToastAndroid.showWithGravity(
-          "Movie added, press Back to return to the list.",
-          ToastAndroid.LONG,
-          ToastAndroid.CENTER
+          "Movie successfully added.",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
         );
+        navigation.goBack();
       } catch (error) {
         console.error("Error during saving movie: ", error);
       }
@@ -90,12 +100,13 @@ export default class InputScreen extends Component {
           .firestore()
           .collection("movies")
           .doc(movieId)
-          .update(this.state.movie);
+          .update(movie);
         ToastAndroid.showWithGravity(
-          "Movie updated, press Back to return to the list.",
-          ToastAndroid.LONG,
-          ToastAndroid.CENTER
+          "Movie successfully updated.",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
         );
+        navigation.goBack();
       } catch (error) {
         console.error("Error during updating movie: ", error);
       }
@@ -104,7 +115,7 @@ export default class InputScreen extends Component {
 
   onAdultPressed() {
     let newAdultValue = !this.state.movie.adult;
-    this.setState({ movie: { adult: newAdultValue } });
+    this.setState({ movie: { ...this.state.movie, adult: newAdultValue } });
   }
 
   render() {
@@ -116,19 +127,20 @@ export default class InputScreen extends Component {
       );
     }
 
-    let movie = this.state.movie;
     return (
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.propertyRow}>
             <View style={styles.propertyLabel}>
-              <Text style={styles.labelText}>Overview</Text>
+              <Text style={styles.labelText}>Title</Text>
             </View>
             <View style={styles.propertyValue}>
               <TextInput
                 placeholder="Title"
                 value={this.state.movie.title}
-                onChangeText={text => this.setState({ movie: { title } })}
+                onChangeText={title =>
+                  this.setState({ movie: { ...this.state.movie, title } })
+                }
               />
             </View>
           </View>
@@ -139,9 +151,11 @@ export default class InputScreen extends Component {
             </View>
             <View style={styles.propertyValue}>
               <TextInput
-                placeholder="Title"
+                placeholder="Overview"
                 value={this.state.movie.overview}
-                onChangeText={text => this.setState({ movie: { overview } })}
+                onChangeText={overview =>
+                  this.setState({ movie: { ...this.state.movie, overview } })
+                }
               />
             </View>
           </View>
@@ -154,8 +168,10 @@ export default class InputScreen extends Component {
               <TextInput
                 placeholder="Release date (eg. YYYY-MM-DD)"
                 value={this.state.movie.release_date}
-                onChangeText={text =>
-                  this.setState({ movie: { release_date } })
+                onChangeText={release_date =>
+                  this.setState({
+                    movie: { ...this.state.movie, release_date }
+                  })
                 }
               />
             </View>
@@ -169,8 +185,10 @@ export default class InputScreen extends Component {
               <TextInput
                 placeholder="Vote average"
                 value={this.state.movie.vote_average}
-                onChangeText={text =>
-                  this.setState({ movie: { vote_average } })
+                onChangeText={vote_average =>
+                  this.setState({
+                    movie: { ...this.state.movie, vote_average }
+                  })
                 }
               />
             </View>
@@ -184,7 +202,9 @@ export default class InputScreen extends Component {
               <TextInput
                 placeholder="Budget"
                 value={this.state.movie.budget}
-                onChangeText={text => this.setState({ movie: { budget } })}
+                onChangeText={budget =>
+                  this.setState({ movie: { ...this.state.movie, budget } })
+                }
               />
             </View>
           </View>
@@ -197,23 +217,20 @@ export default class InputScreen extends Component {
               <TextInput
                 placeholder="Revenue"
                 value={this.state.movie.revenue}
-                onChangeText={text => this.setState({ movie: { revenue } })}
+                onChangeText={revenue =>
+                  this.setState({ movie: { ...this.state.movie, revenue } })
+                }
               />
             </View>
           </View>
 
           <View style={styles.propertyRow}>
-            {/* <View style={styles.propertyLabel}> */}
-            {/* <Text style={styles.labelText}>Adult</Text> */}
-            {/* </View> */}
-            {/* <View style={styles.propertyValue}> */}
             <CheckBox
               center
               title="Adult"
               checked={this.state.movie.adult}
               onPress={this.onAdultPressed}
             />
-            {/* </View> */}
           </View>
 
           <View style={styles.propertyRow}>
@@ -224,12 +241,21 @@ export default class InputScreen extends Component {
               <TextInput
                 placeholder="Homepage"
                 value={this.state.movie.homepage}
-                onChangeText={text => this.setState({ movie: { homepage } })}
+                onChangeText={homepage =>
+                  this.setState({ movie: { ...this.state.movie, homepage } })
+                }
               />
             </View>
           </View>
         </ScrollView>
-        <Button onPress={this.onSave} title="Save" />
+        <Button
+          onPress={this.onSave.bind(
+            this,
+            this.state.movie,
+            this.props.navigation
+          )}
+          title="Save"
+        />
       </View>
     );
   }

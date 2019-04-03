@@ -63,7 +63,7 @@ export default class DetailsScreen extends Component {
     });
   }
 
-  async onDelete() {
+  async onDelete(navigation) {
     try {
       await firebase
         .firestore()
@@ -71,10 +71,11 @@ export default class DetailsScreen extends Component {
         .doc(movieId)
         .delete();
       ToastAndroid.showWithGravity(
-        "Movie deleted, press Back to return to the list.",
-        ToastAndroid.LONG,
-        ToastAndroid.CENTER
+        "Movie successfully deleted.",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
       );
+      navigation.goBack();
     } catch (error) {
       console.error("Error during deleting item: ", error);
     }
@@ -170,7 +171,10 @@ export default class DetailsScreen extends Component {
           />
         </View>
         <View style={styles.button}>
-          <Button onPress={this.onDelete} title="Delete" />
+          <Button
+            onPress={this.onDelete.bind(this, this.props.navigation)}
+            title="Delete"
+          />
         </View>
       </View>
     );
